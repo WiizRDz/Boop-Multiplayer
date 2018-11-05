@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Node JS Server</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+</head>
+<body style="text-align: center;">
+	<canvas id="myCanvas" style="background: #000; top = 0;	left = 0;"></canvas>
+
+	<script type="text/javascript">
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth - 20;
+canvas.height = window.innerHeight - 20;
+width = canvas.width;
+height = canvas.height;
+var boopAmount = 20;
+var lifeAmount = 500;
+var rounds = 0;
+var difficulty = 0;
+var DEBUG = true;
+
+var ID = -1;
+
+var socket = io();
+
+socket.emit('init', {w: width, h: height});
+
+socket.on('init', function(n) {
+	ID = n;
+});
+
+document.addEventListener("keydown", keyDownHandler, false);
+document.addEventListener("keyup", keyUpHandler, false);
+
+var allowKP = true;
+function keyDownHandler(e) {
+	if (e.repeat != undefined) {
+		allowKP = !e.repeat;
+	}
+	if (!allowKP) {return;}
+	allowKP = false;
+
+	if (e.keyCode == 87 || e.keyCode == 38) {
+		// w or up
+		socket.emit('updateState', {u: true});
+	}
+	if (e.keyCode == 68 || e.keyCode == 39) {
+		// d or right
+		socket.emit('updateState', {r: true});
+	}
+	if (e.keyCode == 83 || e.keyCode == 40) {
+		// s or down
+		socket.emit('updateState', {d: true});
+	}
+	if (e.keyCode == 65 || e.keyCode == 37) {
+		// a or left
+		socket.emit('updateState', {l: true});
+	}
+	// if (e.keyCode == 49) {
+	// 	// 1
+	// 	difficulty = 0;
+	// }
+	// if (e.keyCode == 50) {
+	// 	// 2
+	// 	difficulty = 1;
+	// }
+	// if (e.keyCode == 51) {
+	// 	// 3
+	// 	difficulty = 2;
+	// }
+	// if (e.keyCode == 52) {
+	// 	// 4
+	// 	difficulty = 3;
+	// }
+}
+
+function keyUpHandler(e) {
+	if (e.keyCode == 87 || e.keyCode == 38) {
+		// w or up
+		socket.emit('updateState', {u: false});
+	}
+	if (e.keyCode == 68 || e.keyCode == 39) {
+		// d or right
+		socket.emit('updateState', {r: false});
+	}
+	if (e.keyCode == 83 || e.keyCode == 40) {
+		// s or down
+		socket.emit('updateState', {d: false});
+	}
+	if (e.keyCode == 65 || e.keyCode == 37) {
+		// a or left
+		socket.emit('updateState', {l: false});
+	}
+}
+
+function drawPlayer(x, y, c, cs) {
+	ctx.beginPath();
+    ctx.rect(x - cs / 2, y - cs / 2, cs, cs);
+    ctx.strokeStyle = "#111111";
+    ctx.lineWidth = 3;
+    ctx.fillStyle = c;
+    ctx.fill();
+    ctx.stroke();
+    if (DEBUG) {
+	    ctx.font = "30px Arial";
+		ctx.fillStyle = "#FFF";
+		ctx.strokeStyle = "#000";
+		ctx.textAlign = "center";
+	    ctx.strokeText("x:" + x, x + cs, y + cs);
+	    ctx.strokeText("y:" + y, x + cs, y + cs + 40);
+	    ctx.fillText("x:" + x, x + cs, y + cs);
+	    ctx.fillText("y:" + y, x + cs, y + cs + 40);
+	}
+    ctx.closePath();
+}
+
+function drawBounds(fl, cl) {
+	ctx.beginPath();
+	ctx.rect(0, cl, width, fl - cl);
+	ctx.fillStyle = "#EEEEEE";
+	ctx.fill();
+	ctx.closePath();
+}
+
+socket.on('LOADING', function(data) {
+	ctx.clearRect(0, 0, width, height);
+	ctx.font = "30px Arial";
+	ctx.fillStyle = "#FFF";
+	ctx.textAlign = "center";
+	ctx.fillText("Waiting for players: " + data, width / 2, height / 2);
+});
+
+socket.on('CONFIGURE_CANVAS', function(data) {
+	canvas.width = data.w;
+	canvas.height = data.h;
+	width = canvas.width;
+	height = canvas.height;
+});
+
+// Player data is called first, then game data
+socket.on('DATA', function(data) {
+	ctx.clearRect(0, 0, width, height);
+
+	for (var p in data) {
+		drawBounds(data[p].fl, data[p].cl);
+		break;
+	}
+
+	for (var p in data) {
+		drawPlayer(data[p].x, data[p].y, data[p].c, data[p].s);
+	}
+});
+	</script>
+</body>
+</html>
