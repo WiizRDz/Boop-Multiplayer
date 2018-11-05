@@ -40,6 +40,9 @@ class Player {
 		this.c = COLOURS[charID % 2];
 		this.x = Math.round(INIT_VAL(w, this.s, charID).x);
 		this.y = this.fl - this.s / 2;
+		this.yp = 0;
+		this.yc = 0;
+		this.jc = 0;
 
 		this.att = att;
 		this.beenBooped = false;
@@ -58,23 +61,38 @@ class Player {
 	updateState(state) {
 		if (state.l != undefined) { this.state.l = state.l; }
 		if (state.r != undefined) { this.state.r = state.r; }
-		if (state.u != undefined) { this.state.u = state.u; }
+		if (state.u != undefined) {
+			if (state.u && this.jc < 2) {
+				this.yc = 8;
+				this.jc++;
+			}
+			this.state.u = state.u;
+		}
 		if (state.d != undefined) { this.state.d = state.d; }
 	}
 
 	update() {
-		var SPEED = 5;
-		if (this.state.l) {
-			this.x -= SPEED;
+		var SPEED = 7;
+
+		this.hitY();
+		if (this.state.l && Math.abs(this.boopVelo) < 10) {
+			this.x -= SPEED + this.att * 2;
+			if (this.yp == 0) {
+				this.x -= 2;
+			}
+			this.hitX();
 		}
-		if (this.state.r) {
-			this.x += SPEED;
+		if (this.state.r && Math.abs(this.boopVelo) < 10) {
+			this.x += SPEED + this.att * 2;
+			if (this.yp == 0) {
+				this.x += 2;
+			}
+			this.hitX();
 		}
 		if (this.state.u) {
-			this.y -= SPEED;
-		}
-		if (this.state.d) {
-			this.y += SPEED;
+			this.jump();
+			this.y = this.fl - this.s / 2 + this.yp;
+			this.hitY();
 		}
 		if (this.state.d && this.att) {
 			this.boop();
@@ -82,8 +100,30 @@ class Player {
 		if (this.beenBooped) {
 			this.booped();
 		}
+		if (this.y < this.cl - this.s / 2) {
+			this.y = this.cl - this.s / 2;
+			this.yc = -1;
+		}
 
 		this.checkBounds();
+	}
+
+	jump() {
+		if (this.y == getOtherPlayer(this).y + getOtherPlayer(this).s && this.y == this.fl - this.s / 2) {
+			this.state.u = false;
+			return;
+		}
+		if (!this.state.u) {
+			return;
+		}
+		this.yp -= this.yc;
+		this.yc -= .2;
+		if (this.yp > 0) {
+			this.yp = 0;
+			this.yc = 0;
+			this.state.u = false;
+			this.jc = 0;
+		}
 	}
 
 	boop() {
@@ -117,6 +157,31 @@ class Player {
 			this.y = this.cl + this.s / 2;
 		} else if (this.y > this.fl - this.s / 2) {
 			this.y = this.fl - this.s / 2;
+		}
+	}
+
+	hitX() {
+		var otherPlayer = getOtherPlayer(this);
+
+		if (Math.abs(this.y - otherPlayer.y) < this.s && Math.abs(this.x - otherPlayer.x) < this.s) {
+			if (this.x > otherPlayer.x) {
+				this.x = otherPlayer.x + this.s;
+			} else {
+				this.x = otherPlayer.x - this.s;
+			}
+		}
+	}
+
+	hitY() {
+		var otherPlayer = getOtherPlayer(this);
+
+		if (Math.abs(this.y - otherPlayer.y) < this.s && Math.abs(this.x - otherPlayer.x) < this.s) {
+			if (this.y < otherPlayer.y) {
+				this.y = otherPlayer.y - this.s;
+				this.yc = 0;
+				this.jc = 0;
+				otherPlayer.yc = -1;
+			}
 		}
 	}
 }
@@ -189,10 +254,10 @@ setInterval(function() {
 
 	if (Object.keys(PLAYERS).length == 0) {
 		setScreens();
-		var a = true;
+		var a = 1;
 		for (var s in SOCKET_LIST) {
 			PLAYERS[s] = new Player(s, mw, mh, a);
-			a = !a;
+			a = (a + 1) % 2;
 		}
 		for (var s in SOCKET_LIST) {
 			SOCKET_LIST[s].emit('CONFIGURE_CANVAS', {w: mw, h: mh});

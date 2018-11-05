@@ -76,10 +76,10 @@ function keyDownHandler(e) {
 }
 
 function keyUpHandler(e) {
-	if (e.keyCode == 87 || e.keyCode == 38) {
-		// w or up
-		socket.emit('updateState', {u: false});
-	}
+	// if (e.keyCode == 87 || e.keyCode == 38) {
+	// 	// w or up
+	// 	socket.emit('updateState', {u: false});
+	// }
 	if (e.keyCode == 68 || e.keyCode == 39) {
 		// d or right
 		socket.emit('updateState', {r: false});
