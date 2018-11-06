@@ -76,14 +76,14 @@ class Player {
 
 		this.hitY();
 		if (this.state.l && Math.abs(this.boopVelo) < 10) {
-			this.x -= SPEED + this.att * 2;
+			this.x -= SPEED + !this.att * 2;
 			if (this.yp == 0) {
 				this.x -= 2;
 			}
 			this.hitX();
 		}
 		if (this.state.r && Math.abs(this.boopVelo) < 10) {
-			this.x += SPEED + this.att * 2;
+			this.x += SPEED + !this.att * 2;
 			if (this.yp == 0) {
 				this.x += 2;
 			}
@@ -94,7 +94,7 @@ class Player {
 			this.y = this.fl - this.s / 2 + this.yp;
 			this.hitY();
 		}
-		if (this.state.d && this.att) {
+		if (this.state.d && !this.att) {
 			this.boop();
 		}
 		if (this.beenBooped) {
@@ -129,7 +129,7 @@ class Player {
 	boop() {
 		var otherPlayer = getOtherPlayer(this);
 
-		if (Math.abs(this.y - otherPlayer.y) < 70 && Math.abs(this.x - otherPlayer.x) < 55) {
+		if (Math.abs(this.y - otherPlayer.y) < this.s + 20 && Math.abs(this.x - otherPlayer.x) < this.s + 10) {
 			otherPlayer.booped(this.boopD * this.boopAmount);
 		}
 	}
@@ -262,13 +262,12 @@ setInterval(function() {
 		for (var s in SOCKET_LIST) {
 			SOCKET_LIST[s].emit('CONFIGURE_CANVAS', {w: mw, h: mh});
 		}
-
 	}
 
 	var data = {};
 	for (var p in PLAYERS) {
 		PLAYERS[p].update();
-		data[PLAYERS[p].id] = {x: PLAYERS[p].x, y: PLAYERS[p].y, c: PLAYERS[p].c, s: PLAYERS[p].s, fl: PLAYERS[p].fl, cl: PLAYERS[p].cl};
+		data[PLAYERS[p].id] = {x: PLAYERS[p].x, y: PLAYERS[p].y, c: PLAYERS[p].c, s: PLAYERS[p].s, fl: PLAYERS[p].fl, cl: PLAYERS[p].cl, d: PLAYERS[p].boopD, a: PLAYERS[p].att};
 	}
 
 	for (var s in SOCKET_LIST) {
