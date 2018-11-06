@@ -28,6 +28,13 @@ function INIT_VAL(w, charSize, charID) {
 	return {x: 1.5 * charSize, d: 1};
 }
 
+function nextRound() {
+	for (var p in PLAYERS) {
+		PLAYERS[p].resetPos();
+		PLAYERS[p].att = !PLAYERS[p].att;
+	}
+}
+
 class Player {
 	constructor(charID, w, h, att) {
 		this.id = charID;
@@ -54,8 +61,8 @@ class Player {
 	}
 
 	resetPos() {
-		this.x = INIT_VAL(this.w, this.charSize, this.id).x;
-		this.y = this.h / 2;
+		this.x = Math.round(INIT_VAL(this.w, this.s, this.id).x);
+		this.y = this.fl - this.s / 2;
 	}
 
 	updateState(state) {
@@ -106,6 +113,10 @@ class Player {
 		}
 
 		this.checkBounds();
+
+		if (this.att) {
+			this.checkWin();
+		}
 	}
 
 	jump() {
@@ -157,6 +168,18 @@ class Player {
 			this.y = this.cl + this.s / 2;
 		} else if (this.y > this.fl - this.s / 2) {
 			this.y = this.fl - this.s / 2;
+		}
+	}
+
+	checkWin() {
+		if (this.boopD == 1) {
+			if (this.x > this.w - this.s / 2 - 3) {
+				nextRound();
+			}
+		} else {
+			if (this.x < this.s / 2 + 3) {
+				nextRound();
+			}
 		}
 	}
 
