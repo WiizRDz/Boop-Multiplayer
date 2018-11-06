@@ -19,6 +19,9 @@ var io = require('socket.io')(serv, {});
 
 // Game code
 
+var round = 0;
+var timer = 100;
+
 var COLOURS = ["#EBEB87", "#E7B7FA"];
 
 function INIT_VAL(w, charSize, charID) {
@@ -33,6 +36,8 @@ function nextRound() {
 		PLAYERS[p].resetPos();
 		PLAYERS[p].att = !PLAYERS[p].att;
 	}
+	round++;
+	timer = 100;
 }
 
 class Player {
@@ -209,6 +214,13 @@ class Player {
 	}
 }
 
+function f(x) {
+	if (x == 0) {
+		return 0;
+	}
+	return .002 * x * x;
+}
+
 // Server-Client interaction
 var currID = 0;
 
@@ -285,15 +297,20 @@ setInterval(function() {
 		for (var s in SOCKET_LIST) {
 			SOCKET_LIST[s].emit('CONFIGURE_CANVAS', {w: mw, h: mh});
 		}
+		round = 0;
 	}
 
 	var data = {};
 	for (var p in PLAYERS) {
 		PLAYERS[p].update();
-		data[PLAYERS[p].id] = {x: PLAYERS[p].x, y: PLAYERS[p].y, c: PLAYERS[p].c, s: PLAYERS[p].s, fl: PLAYERS[p].fl, cl: PLAYERS[p].cl, d: PLAYERS[p].boopD, a: PLAYERS[p].att};
+		data[PLAYERS[p].id] = {x: PLAYERS[p].x, y: PLAYERS[p].y, c: PLAYERS[p].c, s: PLAYERS[p].s,
+							   fl: PLAYERS[p].fl, cl: PLAYERS[p].cl, d: PLAYERS[p].boopD, a: PLAYERS[p].att,
+							   t: timer};
 	}
 
 	for (var s in SOCKET_LIST) {
 		SOCKET_LIST[s].emit('DATA', data);
 	}
+
+	timer -= f(round);
 }, 1000 / 60);

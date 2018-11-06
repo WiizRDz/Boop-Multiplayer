@@ -4,7 +4,7 @@
 	<title>Boop Multiplayer</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
 </head>
-<body style="text-align: center;">
+<body style="text-align: center; background: #000;">
 	<canvas id="myCanvas" style="background: #000; top = 0;	left = 0;"></canvas>
 
 	<script type="text/javascript">
@@ -107,10 +107,10 @@ function drawPlayer(x, y, c, cs) {
 		ctx.fillStyle = "#FFF";
 		ctx.strokeStyle = "#000";
 		ctx.textAlign = "center";
-	    ctx.strokeText("x:" + Math.round(x * 100) / 100, x + cs, y + cs);
-	    ctx.strokeText("y:" + Math.round(y * 100) / 100, x + cs, y + cs + 40);
-	    ctx.fillText("x:" + Math.round(x * 100) / 100, x + cs, y + cs);
-	    ctx.fillText("y:" + Math.round(y * 100) / 100, x + cs, y + cs + 40);
+	    ctx.strokeText("x: " + Math.round(x * 100) / 100, x + cs, y + cs);
+	    ctx.strokeText("y: " + Math.round(y * 100) / 100, x + cs, y + cs + 40);
+	    ctx.fillText("x: " + Math.round(x * 100) / 100, x + cs, y + cs);
+	    ctx.fillText("y: " + Math.round(y * 100) / 100, x + cs, y + cs + 40);
 	}
     ctx.closePath();
 }
@@ -139,6 +139,25 @@ function drawGoal(d, a, fl, cl) {
 	}
 }
 
+function drawWinner(fl, cl) {
+	ctx.font = "150px Consolas";
+	ctx.fillStyle = "#000";
+	ctx.textAlign = "center";
+	ctx.fillText("WINNER", width / 2, (cl + fl) / 2);
+}
+
+function drawLife(fl, cl, a) {
+	if (a <= 0) { drawWinner(fl, cl); return; }
+	ctx.beginPath();
+    ctx.rect(0, (fl + height) / 2 - 75, width * (a / 100), 150);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 5;
+    ctx.fillStyle = "#5CFE97";
+    ctx.fill();
+    ctx.stroke();
+    ctx.closePath();
+}
+
 socket.on('LOADING', function(data) {
 	ctx.clearRect(0, 0, width, height);
 	ctx.font = "30px Arial";
@@ -161,6 +180,7 @@ socket.on('DATA', function(data) {
 	for (var p in data) {
 		drawBounds(data[p].fl, data[p].cl);
 		drawGoal(data[p].d, data[p].a, data[p].fl, data[p].cl);
+		drawLife(data[p].fl, data[p].cl, data[p].t);
 		break;
 	}
 
