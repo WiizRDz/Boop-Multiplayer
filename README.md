@@ -11,7 +11,7 @@ Mulitplayer remake of https://joshbra.gg/boop/ that allows you to play between t
   - Make sure Node.js is installed and configured on your machine (https://nodejs.org/en/download/)
   - Execute the app.js file using Node.js to host localhost server
   - Machines on the same network can connect to your machine using port :2000 to play the game
-    - If you are the host then go to "localhost:2000" or if on the same network "xxx.xxx.xxx.xxx:2000" (Find out your devices ip adress)
+    - If you are the host then go to "localhost:2000" or if on the same network "192.168.0.xxx:2000" (Find out your devices ip address then port 2000)
     
 ### How to play:
   - Use either WASD or Arrow Keys for controls
