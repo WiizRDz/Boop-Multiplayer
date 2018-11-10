@@ -57,29 +57,17 @@ function keyDownHandler(e) {
 		// a or left
 		socket.emit('updateState', {l: true});
 	}
-	// if (e.keyCode == 49) {
-	// 	// 1
-	// 	difficulty = 0;
-	// }
-	// if (e.keyCode == 50) {
-	// 	// 2
-	// 	difficulty = 1;
-	// }
-	// if (e.keyCode == 51) {
-	// 	// 3
-	// 	difficulty = 2;
-	// }
-	// if (e.keyCode == 52) {
-	// 	// 4
-	// 	difficulty = 3;
-	// }
+	if (e.keyCode == 187) {
+		// +
+		socket.emit('increaseRound');
+	}
+	if (e.keyCode == 189) {
+		// -
+		socket.emit('decreaseRound');
+	}
 }
 
 function keyUpHandler(e) {
-	// if (e.keyCode == 87 || e.keyCode == 38) {
-	// 	// w or up
-	// 	socket.emit('updateState', {u: false});
-	// }
 	if (e.keyCode == 68 || e.keyCode == 39) {
 		// d or right
 		socket.emit('updateState', {r: false});
@@ -146,7 +134,7 @@ function drawWinner(fl, cl) {
 	ctx.fillText("WINNER", width / 2, (cl + fl) / 2);
 }
 
-function drawLife(fl, cl, a) {
+function drawLife(fl, cl, a, r) {
 	if (a <= 0) { drawWinner(fl, cl); return; }
 	ctx.beginPath();
     ctx.rect(0, (fl + height) / 2 - 75, width * (a / 100), 150);
@@ -156,6 +144,10 @@ function drawLife(fl, cl, a) {
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
+    ctx.font = "30px Arial";
+	ctx.fillStyle = "#FFF";
+	ctx.textAlign = "left";
+	ctx.fillText("Round: " + r, 15, (fl + height) / 2 + 120);
 }
 
 socket.on('LOADING', function(data) {
@@ -180,7 +172,7 @@ socket.on('DATA', function(data) {
 	for (var p in data) {
 		drawBounds(data[p].fl, data[p].cl);
 		drawGoal(data[p].d, data[p].a, data[p].fl, data[p].cl);
-		drawLife(data[p].fl, data[p].cl, data[p].t);
+		drawLife(data[p].fl, data[p].cl, data[p].t, data[p].r);
 		break;
 	}
 

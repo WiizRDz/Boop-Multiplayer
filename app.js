@@ -75,7 +75,7 @@ class Player {
 		if (state.r != undefined) { this.state.r = state.r; }
 		if (state.u != undefined) {
 			if (state.u && this.jc < 2) {
-				this.yc = 8;
+				this.yc = this.h / 135;
 				this.jc++;
 			}
 			this.state.u = state.u;
@@ -133,7 +133,7 @@ class Player {
 			return;
 		}
 		this.yp -= this.yc;
-		this.yc -= .2;
+		this.yc -= this.h / 5400;
 		if (this.yp > 0) {
 			this.yp = 0;
 			this.yc = 0;
@@ -245,6 +245,15 @@ io.sockets.on('connection', function(socket) {
 		PLAYERS[socket.id].updateState(data);
 	});
 
+	socket.on('increaseRound', function() {
+		round++;
+		timer = 100;
+	});
+
+	socket.on('decreaseRound', function() {
+		round--;
+		timer = 100;
+	});
 
 	socket.on('disconnect', function() {
 		delete SOCKET_LIST[socket.id];
@@ -305,7 +314,7 @@ setInterval(function() {
 		PLAYERS[p].update();
 		data[PLAYERS[p].id] = {x: PLAYERS[p].x, y: PLAYERS[p].y, c: PLAYERS[p].c, s: PLAYERS[p].s,
 							   fl: PLAYERS[p].fl, cl: PLAYERS[p].cl, d: PLAYERS[p].boopD, a: PLAYERS[p].att,
-							   t: timer};
+							   t: timer, r: round};
 	}
 
 	for (var s in SOCKET_LIST) {
