@@ -1,6 +1,6 @@
 # Boop-Multiplayer
 
-Remake of https://joshbra.gg/boop/
+Mulitplayer remake of https://joshbra.gg/boop/ that allows you to play between two different devices on same network
 
 ### Dependencies:
   - Node.js
