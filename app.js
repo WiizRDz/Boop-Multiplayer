@@ -74,8 +74,8 @@ class Player {
 		if (state.l != undefined) { this.state.l = state.l; }
 		if (state.r != undefined) { this.state.r = state.r; }
 		if (state.u != undefined) {
-			if (state.u && this.jc < 2) {
-				this.yc = this.h / 135;
+			if (state.u && this.jc < 3) {
+				this.yc = this.h / 108;
 				this.jc++;
 			}
 			this.state.u = state.u;
@@ -133,7 +133,7 @@ class Player {
 			return;
 		}
 		this.yp -= this.yc;
-		this.yc -= this.h / 5400;
+		this.yc -= this.h / 3375;
 		if (this.yp > 0) {
 			this.yp = 0;
 			this.yc = 0;
