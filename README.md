@@ -17,7 +17,7 @@ Mulitplayer remake of https://joshbra.gg/boop/ that allows you to play between t
   - Use either WASD or Arrow Keys for controls
   - Move left and right using arrows or A/D
   - Jump using up arrow or W (you can triple jump)
-  - If you are the defender you can use down arrow or D to boop the enemy back
+  - If you are the defender you can use down arrow, D, or space bar to boop the enemy back
   - Roles
     - Defender
       - Your goal is to block and boop the attacker to hold them off long enough until the timer at the bottom of the screen runs out
