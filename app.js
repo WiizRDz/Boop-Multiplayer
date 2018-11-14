@@ -145,7 +145,7 @@ class Player {
 	boop() {
 		var otherPlayer = getOtherPlayer(this);
 
-		if (Math.abs(this.y - otherPlayer.y) < this.s + this.h / 54 && Math.abs(this.x - otherPlayer.x) < this.s + this.h / 108 && this.boopD > 0 ? this.x - otherPlayer.x < 0 : this.x - otherPlayer.x > 0) {
+		if (Math.abs(this.y - otherPlayer.y) < this.s + this.h / 54 && Math.abs(this.x - otherPlayer.x) < this.s + this.h / 108 && (this.boopD > 0 ? this.x - otherPlayer.x < 0 : this.x - otherPlayer.x > 0)) {
 			otherPlayer.booped(this.boopD * this.boopAmount);
 		}
 	}
