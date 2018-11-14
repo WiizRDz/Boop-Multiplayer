@@ -49,8 +49,8 @@ function keyDownHandler(e) {
 		// d or right
 		socket.emit('updateState', {r: true});
 	}
-	if (e.keyCode == 83 || e.keyCode == 40) {
-		// s or down
+	if (e.keyCode == 83 || e.keyCode == 40 || e.keyCode == 32) {
+		// s or down or space
 		socket.emit('updateState', {d: true});
 	}
 	if (e.keyCode == 65 || e.keyCode == 37) {
@@ -72,8 +72,8 @@ function keyUpHandler(e) {
 		// d or right
 		socket.emit('updateState', {r: false});
 	}
-	if (e.keyCode == 83 || e.keyCode == 40) {
-		// s or down
+	if (e.keyCode == 83 || e.keyCode == 40 || e.keyCode == 32) {
+		// s or down or space
 		socket.emit('updateState', {d: false});
 	}
 	if (e.keyCode == 65 || e.keyCode == 37) {
